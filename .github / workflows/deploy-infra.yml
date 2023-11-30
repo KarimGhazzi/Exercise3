@@ -1,0 +1,21 @@
+name: Deploy Infra
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+      - name: setup Azure CLI
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Deploy Infra
+        run: | 
+          az deployment group create --resource-group aguadamillas_students_1 --template-file main.bicep --parameters main.parameters.json --parameters DOCKER_REGISTRY_SERVER_USERNAME=${{ secrets.ACR_ADMIN_USERNAME }} DOCKER_REGISTRY_SERVER_PASSWORD=${{ secrets.ACR_ADMIN_PASSWORD }}
